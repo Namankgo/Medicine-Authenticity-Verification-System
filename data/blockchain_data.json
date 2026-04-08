@@ -1,0 +1,15 @@
+{
+    "difficulty": 3,
+    "pending_transactions": [],
+    "chain": [
+        {
+            "index": 0,
+            "previous_hash": "0",
+            "timestamp": "2026-04-08 15:11:35",
+            "transactions": [],
+            "merkle_root": "2e1cfa82b035c26cbbbdae632cea070514eb8b773f616aaeaf668e2f0be8f10d",
+            "nonce": 5987,
+            "hash": "000242733240bf68d565bed3cb0da918935efbd776b7eff8fb62b343c398fb62"
+        }
+    ]
+}

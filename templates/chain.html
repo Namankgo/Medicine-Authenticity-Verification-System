@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-header">
+        <div>
+            <p class="section-tag">Blockchain Explorer</p>
+            <h2>Full Chain</h2>
+        </div>
+        <div class="status-pill {{ 'valid-pill' if is_valid else 'invalid-pill' }}">
+            {{ "Chain Valid" if is_valid else "Chain Invalid" }}
+        </div>
+    </div>
+
+    <div class="chain-summary">
+        <p><strong>Mining Difficulty:</strong> {{ difficulty }}</p>
+        <p><strong>Total Blocks:</strong> {{ chain|length }}</p>
+    </div>
+
+    <div class="chain-list">
+        {% for block in chain %}
+            <article class="block-card">
+                <div class="block-title-row">
+                    <h3>Block #{{ block.index }}</h3>
+                    {% if block.index == 0 %}
+                        <span class="mini-badge">Genesis Block</span>
+                    {% endif %}
+                </div>
+
+                <p><strong>Timestamp:</strong> {{ block.timestamp }}</p>
+                <p><strong>Previous Hash:</strong> <span class="hash-text">{{ block.previous_hash }}</span></p>
+                <p><strong>Merkle Root:</strong> <span class="hash-text">{{ block.merkle_root }}</span></p>
+                <p><strong>Nonce:</strong> {{ block.nonce }}</p>
+                <p><strong>Hash:</strong> <span class="hash-text">{{ block.hash }}</span></p>
+
+                <div class="transaction-box">
+                    <h4>Transactions</h4>
+                    {% if block.transactions %}
+                        {% for tx in block.transactions %}
+                            <div class="transaction-item">
+                                <p><strong>Stage:</strong> {{ tx.stage if tx.stage else 'Manufacturer' }}</p>
+                                <p><strong>Party:</strong> {{ tx.party_name if tx.party_name else tx.manufacturer_name }}</p>
+                                <p><strong>Medicine:</strong> {{ tx.medicine_name }}</p>
+                                <p><strong>Batch ID:</strong> {{ tx.batch_id }}</p>
+                                {% if tx.from_party or tx.to_party %}
+                                    <p><strong>Handoff:</strong> {{ tx.from_party if tx.from_party else 'Origin' }} -> {{ tx.to_party if tx.to_party else 'Pending' }}</p>
+                                {% endif %}
+                                <p><strong>Registered At:</strong> {{ tx.registered_at }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="small-text">This block contains no medicine transactions.</p>
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-grid">
+    <article class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="section-tag">Supply Chain</p>
+                <h2>Track Distributor and Pharmacy Updates</h2>
+            </div>
+        </div>
+
+        <form method="POST" class="form-card">
+            <label for="medicine_name">Medicine Name</label>
+            <input type="text" id="medicine_name" name="medicine_name" placeholder="Enter medicine name" required>
+
+            <label for="batch_id">Batch ID</label>
+            <input type="text" id="batch_id" name="batch_id" placeholder="Enter batch ID" required>
+
+            <label for="stage">Stage</label>
+            <select id="stage" name="stage" required>
+                <option value="Distributor">Distributor</option>
+                <option value="Pharmacy">Pharmacy</option>
+            </select>
+
+            <label for="party_name">Party Name</label>
+            <input type="text" id="party_name" name="party_name" placeholder="Distributor or pharmacy name" required>
+
+            <label for="from_party">From Party</label>
+            <input type="text" id="from_party" name="from_party" placeholder="Manufacturer or distributor">
+
+            <label for="to_party">To Party</label>
+            <input type="text" id="to_party" name="to_party" placeholder="Next party in chain">
+
+            <label for="notes">Notes</label>
+            <input type="text" id="notes" name="notes" placeholder="Optional note">
+
+            <button type="submit" class="button primary full-width">Add Supply Chain Transaction</button>
+        </form>
+    </article>
+
+    <article class="panel info-panel">
+        <div class="panel-header">
+            <div>
+                <p class="section-tag">Flow</p>
+                <h3>Manufacturer -> Distributor -> Pharmacy</h3>
+            </div>
+        </div>
+        <p class="hero-text">
+            The manufacturer stage is recorded from the Add Medicine page.
+            Use this page to store the distributor and pharmacy handoffs as separate blockchain transactions.
+        </p>
+        <ul class="feature-list">
+            <li>Each update keeps the same batch ID</li>
+            <li>Stage and party name are stored on-chain</li>
+            <li>History stays visible in Verify and Chain views</li>
+        </ul>
+    </article>
+</section>
+
+{% if success_data %}
+<section class="panel success-panel">
+    <div class="panel-header">
+        <div>
+            <p class="section-tag">Transaction Saved</p>
+            <h2>Supply chain update added successfully</h2>
+        </div>
+    </div>
+
+    <div class="result-grid">
+        <div class="result-card">
+            <h3>Transaction Details</h3>
+            <p><strong>Stage:</strong> {{ success_data.transaction.stage }}</p>
+            <p><strong>Party:</strong> {{ success_data.transaction.party_name }}</p>
+            <p><strong>Medicine:</strong> {{ success_data.transaction.medicine_name }}</p>
+            <p><strong>Batch ID:</strong> {{ success_data.transaction.batch_id }}</p>
+            <p><strong>Registered At:</strong> {{ success_data.transaction.registered_at }}</p>
+        </div>
+
+        <div class="result-card">
+            <h3>Handoff</h3>
+            <p><strong>From:</strong> {{ success_data.transaction.from_party if success_data.transaction.from_party else 'Not set' }}</p>
+            <p><strong>To:</strong> {{ success_data.transaction.to_party if success_data.transaction.to_party else 'Not set' }}</p>
+            <p><strong>Notes:</strong> {{ success_data.transaction.notes if success_data.transaction.notes else 'None' }}</p>
+        </div>
+
+        <div class="result-card">
+            <h3>Block Details</h3>
+            <p><strong>Block Index:</strong> {{ success_data.block.index }}</p>
+            <p><strong>Block Timestamp:</strong> {{ success_data.block.timestamp }}</p>
+            <p><strong>Nonce:</strong> {{ success_data.block.nonce }}</p>
+            <p><strong>Hash:</strong> <span class="hash-text">{{ success_data.block.hash }}</span></p>
+        </div>
+    </div>
+
+    <div class="trace-panel">
+        <h3>Batch Traceability History</h3>
+        {% for item in success_data.history %}
+            <div class="trace-item">
+                <p><strong>Stage:</strong> {{ item.stage if item.stage else 'Manufacturer' }}</p>
+                <p><strong>Party:</strong> {{ item.party_name if item.party_name else item.manufacturer_name }}</p>
+                <p><strong>Medicine:</strong> {{ item.medicine_name }}</p>
+                <p><strong>Batch ID:</strong> {{ item.batch_id }}</p>
+                {% if item.from_party or item.to_party %}
+                    <p><strong>Handoff:</strong> {{ item.from_party if item.from_party else 'Origin' }} -> {{ item.to_party if item.to_party else 'Pending' }}</p>
+                {% endif %}
+                <p><strong>Registered At:</strong> {{ item.registered_at }}</p>
+                <p><strong>Block Index:</strong> #{{ item.block_index }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}
